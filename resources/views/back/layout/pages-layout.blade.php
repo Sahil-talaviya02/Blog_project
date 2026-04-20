@@ -6,6 +6,8 @@
     <meta charset="utf-8" />
     <title>@yield('pageTitle')</title>
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- Site favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/back/vendors/images/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/back/vendors/images/favicon-32x32.png" />
@@ -22,10 +24,20 @@
     <link rel="stylesheet" type="text/css" href="/back/vendors/styles/icon-font.min.css" />
     <link rel="stylesheet" type="text/css" href="/back/vendors/styles/style.css" />
     <link rel="stylesheet" type="text/css" href="/extra-assets/ijabo/css/ijabo.min.css" />
+
+    <!-- jQuery (REQUIRED) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap 4 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    @kropifyStyles 
     @stack('stylesheets')
 </head>
 
 <body>
+
 
     <!-- header -->
     <div class="header">
@@ -156,27 +168,8 @@
                 </div>
             </div>
 
-            <div class="user-info-dropdown">
-                <div class="dropdown">
-                    <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                        <span class="user-icon">
-                            <img src="/back/vendors/images/photo1.jpg" alt="" />
-                        </span>
-                        <span class="user-name">Ross C. Lopez</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                        <a class="dropdown-item" href="{{ route('admin.profile') }}"><i class="dw dw-user1"></i> Profile</a>
-                        <a class="dropdown-item" href=""><i class="dw dw-settings2"></i> Setting</a>
-                        <a class="dropdown-item" href="faq.html"><i class="dw dw-help"></i> Help</a>
-                        <a class="dropdown-item" href="{{ route('admin.logout') }}"
-                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i
-                                class="dw dw-logout"></i> Log Out</a>
-                        <form action="{{ route('admin.logout') }}" method="POST" class="d-none" id="logout-form">
-                            @csrf
-                        </form>
-                    </div>
-                </div>
-            </div>
+            @livewire('admin.top-user-info')
+
             <div class="github-link">
                 <a href="https://github.com/dropways/deskapp" target="_blank"><img
                         src="/back/vendors/images/github.svg" alt="" /></a>
@@ -346,7 +339,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="" class="dropdown-toggle no-arrow">
+                        <a href="{{ route('admin.settings') }}" class="dropdown-toggle no-arrow">
                             <span class="micon fa fa-cog"></span>
                             <span class="mtext"> General Settings </span>
                         </a>
@@ -374,24 +367,58 @@
         </div>
     </div>
 
+    <!-- ✅ TOAST CONTAINER -->
+    <div id="toastContainer" class="position-fixed" style="top:20px; right:20px; z-index:9999;">
+    </div>
+
     <!-- js -->
     <script src="/back/vendors/scripts/core.js"></script>
     <script src="/back/vendors/scripts/script.min.js"></script>
     <script src="/back/vendors/scripts/process.js"></script>
     <script src="/back/vendors/scripts/layout-settings.js"></script>
-    <script src="/extra-assets/ijabo/js/jquery.min.js"></script>
+
+    @kropifyScripts
+
+    
+    <!-- ✅ TOAST SCRIPT (WORKING) -->
     <script>
-        window.addEventListener('showToastr', function(event) {
-            $().notify({
-                vers: 2,
-                cssClass: event.detail[0].type,
-                message: event.detail[0].message,
-                delay: 2500,
-            })
-        })
+        $(document).ready(function() {
+
+            window.addEventListener('showToastr', function(event) {
+
+                let type = event.detail[0].type;
+                let message = event.detail[0].message;
+
+                let bgClass = (type === 'success') ? 'bg-success' : 'bg-danger';
+
+                let toastHTML = `
+                    <div class="toast ${bgClass} text-white mb-2" role="alert" data-delay="3000" data-autohide="true">
+                        <div class="d-flex justify-content-between align-items-center px-2 py-2">
+                            <div class="toast-body p-0">
+                                ${message}
+                            </div>
+                            <button type="button" class="ml-3 close text-white" data-dismiss="toast">
+                                &times;
+                            </button>
+                        </div>
+                    </div>`;
+
+                let container = $('#toastContainer');
+                container.append(toastHTML);
+
+                let toast = container.find('.toast').last();
+                toast.toast('show');
+
+                // remove after hide
+                toast.on('hidden.bs.toast', function() {
+                    $(this).remove();
+                });
+
+            });
+
+        });
     </script>
     @stack('scripts')
-
 </body>
 
 </html>

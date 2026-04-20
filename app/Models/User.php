@@ -57,8 +57,15 @@ class User extends Authenticatable
         ];
     }
 
-    public function getPictureUrlAttribute($val)
+    public function getPictureUrlAttribute()
     {
-        return $val ? asset('images/users/' . $val) : asset('images/users/default-avatar.png');
+        return $this->picture
+            ? asset($this->picture)
+            : asset('images/users/default-avatar.png');
+    }
+
+    public function socialLinks()
+    {
+        return $this->belongsTo(UserSocialLink::class, 'id', 'user_id');
     }
 }
