@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GeneralSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,15 @@ class AdminController extends Controller
             'pageTitle' => 'Admin Dashboard'
         ];
         return view('back.pages.dashboard', $data);
+    }
+    
+    // ✅ Categories Page
+    public function categoriesPage(Request $request)
+    {
+        $data = [
+            'pageTitle' => 'Categories Page'
+        ];
+        return view('back.pages.categories_page', $data);
     }
 
     public function logoutHandler(Request $request)
@@ -35,36 +45,62 @@ class AdminController extends Controller
     }
 
     // ✅ Update Profile Image
-    public function updateProfilePicture(Request $request)
+    public function updateLogo(Request $request)
     {
-        // Validate
         $request->validate([
-            'profilePictureFile' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'site_logo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'site_favicon' => 'nullable|image|mimes:jpg,jpeg,png,ico|max:1024',
         ]);
 
-        $user = User::findOrFail(auth()->id());
+        $setting = GeneralSetting::first();
 
-        // Create filename  
-        $filename = 'user_' . $user->id . '_' . time() . '.' .
-            $request->file('profilePictureFile')->getClientOriginalExtension();
-
-        // Save directly into public/
-        $request->file('profilePictureFile')->move(public_path('images/users'), $filename);
-
-        // Delete old image (if exists)
-        if ($user->picture && file_exists(public_path('images/users/' . $user->picture))) {
-            @unlink(public_path('images/users/' . $user->picture));
+        if (!$setting) {
+            return response()->json([
+                'status' => 0,
+                'msg' => 'Update general settings first'
+            ]);
         }
 
-        // Save in DB
-        $user->update([
-            'picture' => $filename
-        ]);
+        $path = 'images/logos/';
+
+        // ✅ Upload function
+        $uploadFile = function ($file, $oldFile, $prefix) use ($path) {
+            $filename = $prefix . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+            $file->move(public_path($path), $filename);
+
+            if ($oldFile && file_exists(public_path($path . $oldFile))) {
+                File::delete(public_path($path . $oldFile));
+            }
+
+            return $filename;
+        };
+
+        // ✅ Logo
+        if ($request->hasFile('site_logo')) {
+            $setting->site_logo = $uploadFile(
+                $request->file('site_logo'),
+                $setting->site_logo,
+                'logo'
+            );
+        }
+
+        // ✅ Favicon
+        if ($request->hasFile('site_favicon')) {
+            $setting->site_favicon = $uploadFile(
+                $request->file('site_favicon'),
+                $setting->site_favicon,
+                'favicon'
+            );
+        }
+
+        $setting->save();
 
         return response()->json([
             'status' => 1,
-            'msg' => 'Profile image updated successfully',
-            'url' => asset('images/users/' . $filename)
+            'msg' => 'Updated successfully',
+            'logo' => asset($path . $setting->site_logo),
+            'favicon' => asset($path . $setting->site_favicon),
         ]);
     }
 
@@ -105,4 +141,5 @@ class AdminController extends Controller
         ];
         return view('back.pages.general_settings', $data);
     }
+
 }

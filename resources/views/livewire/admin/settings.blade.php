@@ -1,76 +1,109 @@
-<div>
+<div> {{-- ✅ SINGLE ROOT ELEMENT --}}
+
     <div class="tab">
+
         <ul class="nav nav-tabs customtab" role="tablist">
+
             <li class="nav-item">
-                <a wire:click="selectTab('general_settings')"
-                    class="nav-link {{ $tab == 'general_settings' ? 'active' : '' }}" data-toggle="tab"
-                    href="#general_settings" role="tab" aria-selected="false">General
-                    Settings</a>
+                <a class="nav-link active" data-toggle="tab" href="#general_settings">
+                    General Settings
+                </a>
             </li>
+
             <li class="nav-item">
-                <a wire:click="selectTab('logo_favicon')" class="nav-link {{ $tab == 'logo_favicon' ? 'active' : '' }}"
-                    data-toggle="tab" href="#logo_favicon" role="tab" aria-selected="true">Logo & Favicon</a>
+                <a class="nav-link" data-toggle="tab" href="#logo_favicon">
+                    Logo & Favicon
+                </a>
             </li>
+
         </ul>
+
         <div class="tab-content">
-            <div class="tab-pane fade {{ $tab == 'general_settings' ? 'active show' : '' }}" id="general_settings"
-                role="tabpanel">
+
+            {{-- ================= GENERAL SETTINGS ================= --}}
+            <div class="tab-pane fade show active" id="general_settings">
+
                 <div class="pd-20">
-                    <form wire:submit="updateSiteInfo()">
+
+                    <form>
                         <div class="row">
+
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="site_title">Site Title</label>
-                                    <input type="text" class="form-control" wire:model="site_title"
-                                        placeholder="Enter site title">
-                                    @error('site_title')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                                <label>Site Title</label>
+                                <input type="text" class="form-control" value="{{ settings()->site_title ?? '' }}">
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="site_email">Site Email</label>
-                                    <input type="text" class="form-control" wire:model="site_email"
-                                        placeholder="Enter site email">
-                                    @error('site_email')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                                <label>Site Email</label>
+                                <input type="text" class="form-control" value="{{ settings()->site_email ?? '' }}">
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="site_phone">Site Phone Number (Optional)</label>
-                                    <input type="text" class="form-control" wire:model="site_phone"
-                                        placeholder="Enter site phone number">
-                                    @error('site_phone')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
+                        </div>
 
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="site_meta_keywords">Site Meta Keywords</label>
-                                    <input type="text" class="form-control" wire:model="site_meta_keywords"
-                                        placeholder="Enter site meta keywords">
-                                    @error('site_meta_keywords')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
+                        <div class="mt-3">
+                            <button class="btn btn-primary">Update</button>
                         </div>
                     </form>
+
                 </div>
+
             </div>
-            <div class="tab-pane fade {{ $tab == 'logo_favicon' ? 'active show' : '' }}" id="logo_favicon"
-                role="tabpanel">
+
+            {{-- ================= LOGO & FAVICON ================= --}}
+            <div class="tab-pane fade" id="logo_favicon">
+
                 <div class="pd-20">
-                    ----- Logo & Favicon -----
+
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            {{-- LOGO --}}
+                            <h6>Site Logo</h6>
+                            <div class="mb-2">
+                                <img id="preview_site_logo"
+                                    src="{{ settings()->site_logo ? asset('images/logos/' . settings()->site_logo) : '' }}"
+                                    class="img-thumbnail" width="150">
+                            </div>
+
+                            {{-- FAVICON --}}
+                            <h6 class="mt-3">Favicon</h6>
+                            <div class="mb-2">
+                                <img id="preview_favicon"
+                                    src="{{ settings()->site_favicon ? asset('images/logos/' . settings()->site_favicon) : '' }}"
+                                    class="img-thumbnail" width="60">
+                            </div>
+
+                            {{-- FORM --}}
+                            <form id="updateLogoForm" action="{{ route('admin.update_logo') }}" method="POST"
+                                enctype="multipart/form-data">
+
+                                @csrf
+
+                                <div class="mb-2">
+                                    <label>Upload Logo</label>
+                                    <input type="file" name="site_logo" class="form-control">
+                                </div>
+
+                                <div class="mb-2">
+                                    <label>Upload Favicon</label>
+                                    <input type="file" name="site_favicon" class="form-control">
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">
+                                    Update
+                                </button>
+
+                            </form>
+
+                        </div>
+                    </div>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
