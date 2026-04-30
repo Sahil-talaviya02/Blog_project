@@ -45,15 +45,16 @@ class Profile extends Component
         $this->bio = $user->bio;
 
         //populate social links
-        if(!is_null ($user->social_links)){
-            $this->facebook_url = $user->social_links->facebook_url;
-            $this->twitter_url = $user->social_links->twitter_url;
-            $this->instagram_url = $user->social_links->instagram_url;
-            $this->youtube_url = $user->social_links->youtube_url;
-            $this->linkedin_url = $user->social_links->linkedin_url;
-            $this->github_url = $user->social_links->github_url;
+        if ($user->socialLinks) {
+            $this->facebook_url  = $user->socialLinks->facebook_url;
+            $this->twitter_url   = $user->socialLinks->twitter_url;
+            $this->instagram_url = $user->socialLinks->instagram_url;
+            $this->youtube_url   = $user->socialLinks->youtube_url;
+            $this->linkedin_url  = $user->socialLinks->linkedin_url;
+            $this->github_url    = $user->socialLinks->github_url;
         }
     }
+
     // ✅ IMAGE UPLOAD HANDLER
     public function updatedProfilePictureFile()
     {
@@ -97,15 +98,17 @@ class Profile extends Component
 
     public function updatePersonalDetails()
     {
+        $user = User::findOrFail(auth()->id());
+
         $this->validate([
             'name' => 'required|string|max:50',
             'username' => [
                 'required',
-                Rule::unique('users', 'username')->ignore($this->user->id),
+                Rule::unique('users', 'username')->ignore(auth()->id()),
             ],
         ]);
 
-        $updated = $this->user->update([
+        $updated = $user->update([
             'name' => $this->name,
             'username' => $this->username,
             'bio' => $this->bio,
@@ -178,43 +181,43 @@ class Profile extends Component
     // update social links
     public function updateSocialLinks()
     {
+        // 1. Validate inputs
         $this->validate([
-            'facebook_url' => 'nullable|url',
-            'twitter_url' => 'nullable|url',
+            'facebook_url'  => 'nullable|url',
+            'twitter_url'   => 'nullable|url',
             'instagram_url' => 'nullable|url',
-            'youtube_url' => 'nullable|url',
-            'linkedin_url' => 'nullable|url',
-            'github_url' => 'nullable|url',
+            'youtube_url'   => 'nullable|url',
+            'linkedin_url'  => 'nullable|url',
+            'github_url'    => 'nullable|url',
         ]);
 
+        // 2. Get current user
         $user = User::findOrFail(auth()->id());
-        $data = array(
-            'facebook_url' => $this->facebook_url,
-            'twitter_url' => $this->twitter_url,
+
+        // 3. Prepare data
+        $data = [
+            'facebook_url'  => $this->facebook_url,
+            'twitter_url'   => $this->twitter_url,
             'instagram_url' => $this->instagram_url,
-            'youtube_url' => $this->youtube_url,
-            'linkedin_url' => $this->linkedin_url,
-            'github_url' => $this->github_url,
+            'youtube_url'   => $this->youtube_url,
+            'linkedin_url'  => $this->linkedin_url,
+            'github_url'    => $this->github_url,
+        ];
+
+        // 4. Create or Update (NO duplicate error)
+        UserSocialLink::updateOrCreate(
+            ['user_id' => $user->id],
+            $data
         );
 
-        if (!is_null($user->social_links)) {
-            $query = $user->social_links->update($data);
-        } else {
-            $data['user_id'] = $user->id;
-            $query = UserSocialLink::insert($data);
-        }
+        // 5. Refresh relation (optional but good)
+        $user->refresh();
 
-        if ($query) {
-            $this->dispatch('showToastr', [
-                'type' => 'success',
-                'message' => 'Social links updated successfully'
-            ]);
-        } else {
-            $this->dispatch('showToastr', [
-                'type' => 'error',
-                'message' => 'Failed to update social links'
-            ]);
-        }
+        // 6. Show success message
+        $this->dispatch('showToastr', [
+            'type' => 'success',
+            'message' => 'Social links updated successfully'
+        ]);
     }
 
     public function render()

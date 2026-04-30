@@ -14,9 +14,20 @@ class Category extends Model
     protected $fillable = [
         'name',
         'slug',
-        'parent',
+        'parent_id',
         'ordering'
     ];
+
+    public function parentCategory()
+    {
+        return $this->belongsTo(ParentCategory::class, 'parent_id');
+    }
+
+    // optional (if posts exist)
+    // public function posts()
+    // {
+    //     return $this->hasMany(Post::class);
+    // }
 
     public function sluggable(): array
     {

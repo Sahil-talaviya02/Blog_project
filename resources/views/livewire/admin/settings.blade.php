@@ -25,17 +25,23 @@
 
                 <div class="pd-20">
 
-                    <form>
+                    <form wire:submit="updateSiteInfo">
                         <div class="row">
 
                             <div class="col-md-6">
                                 <label>Site Title</label>
-                                <input type="text" class="form-control" value="{{ settings()->site_title ?? '' }}">
+                                <input type="text" name="site_title" class="form-control" value="{{ settings()->site_title ?? '' }}">
+                                @error('site_title')
+                                    <span class="error text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
 
                             <div class="col-md-6">
                                 <label>Site Email</label>
-                                <input type="text" class="form-control" value="{{ settings()->site_email ?? '' }}">
+                                <input type="text" name="site_email" class="form-control" value="{{ settings()->site_email ?? '' }}">
+                                @error('site_email')
+                                    <span class="error text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
 
                         </div>
@@ -61,7 +67,7 @@
                             <h6>Site Logo</h6>
                             <div class="mb-2">
                                 <img id="preview_site_logo"
-                                    src="{{ settings()->site_logo ? asset('images/logos/' . settings()->site_logo) : '' }}"
+                                    src="{{ settings()?->site_logo ? asset('images/logos/' . settings()->site_logo->logo) : '' }}"
                                     class="img-thumbnail" width="150">
                             </div>
 
@@ -69,7 +75,7 @@
                             <h6 class="mt-3">Favicon</h6>
                             <div class="mb-2">
                                 <img id="preview_favicon"
-                                    src="{{ settings()->site_favicon ? asset('images/logos/' . settings()->site_favicon) : '' }}"
+                                    src="{{ settings()?->site_favicon ? asset('images/logos/' . settings()->site_favicon) : '' }}"
                                     class="img-thumbnail" width="60">
                             </div>
 

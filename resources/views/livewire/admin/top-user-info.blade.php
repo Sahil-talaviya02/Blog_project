@@ -1,24 +1,39 @@
-<div class="user-info-dropdown">
+<div class="user-info-dropdown" wire:ignore>
     <div class="dropdown">
-        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-            <span class="user-icon">
-                <img src="{{ $user->picture && file_exists(public_path('images/users/' . $user->picture))
-                    ? asset('images/users/' . $user->picture)
-                    : asset('images/users/default-avatar.png') }}"
-                    alt="{{ $user->name }}" />
-            </span>
-            <span class="user-name">{{ $user->name }}</span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-            <a class="dropdown-item" href="{{ route('admin.profile') }}"><i class="dw dw-user1"></i> Profile</a>
-            <a class="dropdown-item" href=""><i class="dw dw-settings2"></i> Setting</a>
-            <a class="dropdown-item" href="faq.html"><i class="dw dw-help"></i> Help</a>
-            <a class="dropdown-item" href="{{ route('admin.logout') }}"
-                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i
-                    class="dw dw-logout"></i> Log Out</a>
-            <form action="{{ route('admin.logout') }}" method="POST" class="d-none" id="logout-form">
-                @csrf
-            </form>
+
+        <button class="dropdown-toggle no-arrow border-0 bg-transparent" type="button" data-toggle="dropdown">
+
+            <img src="{{ $user->picture && file_exists(public_path('images/users/' . $user->picture))
+                ? asset('images/users/' . $user->picture)
+                : asset('images/users/default-avatar.png') }}"
+                style="width:40px;height:40px;border-radius:50%;">
+        </button>
+
+        <div class="dropdown-menu dropdown-menu-right">
+
+            <a class="dropdown-item" href="{{ route('admin.profile') }}">
+                Profile
+            </a>
+
+            <a class="dropdown-item" href="{{ route('admin.settings') }}">
+                Settings
+            </a>
+
+            <a class="dropdown-item" href="#">
+                Help
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <a class="dropdown-item text-danger" href="#"
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                Logout
+            </a>
+
         </div>
     </div>
+
+    <form id="logout-form" method="POST" action="{{ route('admin.logout') }}" class="d-none">
+        @csrf
+    </form>
 </div>

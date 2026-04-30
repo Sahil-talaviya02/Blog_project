@@ -10,11 +10,17 @@ class ParentCategory extends Model
 {
     use HasFactory;
     use Sluggable;
+    
     protected $fillable = [
         'name',
         'slug',
         'ordering'
     ];
+
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
 
     public function sluggable(): array
     {

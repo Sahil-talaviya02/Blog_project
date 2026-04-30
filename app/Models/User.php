@@ -66,6 +66,6 @@ class User extends Authenticatable
 
     public function socialLinks()
     {
-        return $this->belongsTo(UserSocialLink::class, 'id', 'user_id');
+        return $this->hasOne(UserSocialLink::class, 'user_id', 'id');
     }
 }

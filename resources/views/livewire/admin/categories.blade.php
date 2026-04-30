@@ -7,7 +7,7 @@
                         <h4 class="h4 text-blue">Parent Categories</h4>
                     </div>
                     <div class="pull-right">
-                        <a href="javascript:;" wire:click="addParentCategory" class="btn btn-primary btn-sm "> Add Parent
+                        <a href="javascript:;" wire:click="addParentCategory()" class="btn btn-primary btn-sm "> Add Parent
                             Category</a>
                     </div>
                 </div>
@@ -20,22 +20,35 @@
                             <th>Actions</th>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>P. Cat 1</td>
-                                <td>4</td>
-                                <td>
-                                    <div class="table-action">
-                                        <a href="#" class="text-primary mx-2">
-                                            <i class="dw dw-edit2"></i></a>
-                                        <a href="#" class="text-danger mx-2">
-                                            <i class="dw dw-delete-3"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
+                            @forelse ($parentCategories as $item)
+                                <tr>
+                                    <td>{{ ($parentCategories->currentPage() - 1) * $parentCategories->perPage() + $loop->iteration }}
+                                    </td>
+                                    <td>{{ $item->name }}</td>
+                                    <td>{{ $item->children->count() }}</td>
+                                    <td>
+                                        <div class="table-action">
+                                            <a href="javascript:;" wire:click="editParentCategory({{ $item->id }})"
+                                                class="text-primary mx-2">
+                                                <i class="dw dw-edit2"></i></a>
+                                            <a href="javascript:;" wire:click="confirmDelete({{ $item->id }})"
+                                                class="text-danger mx-2">
+                                                <i class="dw dw-delete-3"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center">No Parent Categories Found</td>
+                                </tr>
+                            @endforelse
 
                         </tbody>
                     </table>
+                </div>
+                <div class="d-block mt-1 text-center">
+                    {{ $parentCategories->links('vendor.pagination.bootstrap-4') }}
                 </div>
             </div>
         </div>
@@ -47,7 +60,8 @@
                         <h4 class="h4 text-blue">Categories</h4>
                     </div>
                     <div class="pull-right">
-                        <a href="#" class="btn btn-primary btn-sm ">Add Category</a>
+                        <a href="javascript:;" wire:click="addCategory()" class="btn btn-primary btn-sm ">Add
+                            Category</a>
                     </div>
                 </div>
                 <div class="table-responsive mt-4">
@@ -60,64 +74,136 @@
                             <th>Actions</th>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>category 1</td>
-                                <td>Any</td>
-                                <td>4</td>
-                                <td>
-                                    <div class="table-action">
-                                        <a href="#" class="text-primary mx-2">
-                                            <i class="dw dw-edit2"></i></a>
-                                        <a href="#" class="text-danger mx-2">
-                                            <i class="dw dw-delete-3"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-
+                            @forelse($categories as $category)
+                                <tr>
+                                    <td>{{ ($categories->currentPage() - 1) * $categories->perPage() + $loop->iteration }}
+                                    </td>
+                                    <td>{{ $category->name }}</td>
+                                    <td>{{ $category->parentCategory->name ?? 'N/A' }}
+                                    </td>
+                                    <td>{{ $category->posts_count ?? '-' }}</td>
+                                    <td>
+                                        <div class="table-action">
+                                            <a href="javascript:;" wire:click="editCategory({{ $category->id }})"
+                                                class="text-primary mx-2">
+                                                <i class="dw dw-edit2"></i></a>
+                                            <a href="javascript:;"
+                                                wire:click="confirmDeleteCategory({{ $category->id }})"
+                                                class="text-danger mx-2">
+                                                <i class="dw dw-delete-3"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center">No categories found</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
+                </div>
+                <div class="d-block mt-1 text-center">
+                    {{ $categories->links('vendor.pagination.bootstrap-4') }}
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- modals --}}
+    {{-- parent category modal --}}
     <div wire:ignore.self class="modal fade" id="pcategory-modal" tabindex="-1" role="dialog"
         aria-labelledby="myLargeModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <form class="modal-content"
+                wire:submit="{{ $isUpdateParentCategoryMode ? 'updateParentCategory()' : 'createParentCategory()' }}">
+                @csrf
                 <div class="modal-header">
                     <h4 class="modal-title" id="myLargeModalLabel">
-                        {{ $isUpdateParentCategoryMode ? 'Update Category' : 'Add Category' }}
+                        {{ $isUpdateParentCategoryMode ? 'Update Parent Category' : 'Add Parent Category' }}
                     </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                         ×
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit, sed do eiusmod tempor incididunt ut labore et
-                        dolore magna aliqua. Ut enim ad minim veniam, quis
-                        nostrud exercitation ullamco laboris nisi ut aliquip
-                        ex ea commodo consequat. Duis aute irure dolor in
-                        reprehenderit in voluptate velit esse cillum dolore eu
-                        fugiat nulla pariatur. Excepteur sint occaecat
-                        cupidatat non proident, sunt in culpa qui officia
-                        deserunt mollit anim id est laborum.
-                    </p>
+                    @if ($isUpdateParentCategoryMode)
+                        <input type="hidden" name="pcategory_id" wire:model="pcategory_id" />
+                    @endif
+                    <div class="form-group">
+                        <label for="pcategory_name">Parent Category Name</label>
+                        <input type="text" wire:model="pcategory_name" class="form-control"
+                            placeholder="Enter Parent Category Name" />
+                    </div>
+                    @error('pcategory_name')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" class="btn btn-primary">
-                        Save changes
+                    <button type="submit" class="btn btn-primary">
+                        {{ $isUpdateParentCategoryMode ? 'Save changes' : 'Create' }}
                     </button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
+    {{-- category modals --}}
+    <div wire:ignore.self class="modal fade" id="category-modal" tabindex="-1" role="dialog"
+        aria-labelledby="myLargeModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content"
+                wire:submit="{{ $isUpdateCategoryMode ? 'updateCategory()' : 'createCategory()' }}">
+                @csrf
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">
+                        {{ $isUpdateCategoryMode ? 'Update Category' : 'Add Category' }}
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if ($isUpdateCategoryMode)
+                        <input type="hidden" name="category_id" wire:model="category_id" />
+                    @endif
+
+                    <div class="form-group">
+                        <label for="parent_category">Parent Category</label>
+                        <select wire:model="category_parent_id" class="form-control">
+                            <option value="">-- Select Parent Category --</option>
+
+                            @foreach ($allParentCategories as $parentCategory)
+                                <option value="{{ $parentCategory->id }}">
+                                    {{ $parentCategory->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @error('category_parent_id')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+
+                    <div class="form-group">
+                        <label for="category_name">Category Name</label>
+                        <input type="text" wire:model="category_name" class="form-control"
+                            placeholder="Enter Category Name" />
+                    </div>
+                    @error('category_name')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        {{ $isUpdateCategoryMode ? 'Save changes' : 'Create' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>

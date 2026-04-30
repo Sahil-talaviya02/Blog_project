@@ -15,7 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->integer('parent')->default(0);
+
+            // ✅ proper foreign key
+            $table->foreignId('parent_id')
+                ->constrained('parent_categories')
+                ->cascadeOnDelete();
+
             $table->integer('ordering')->default(1000);
             $table->timestamps();
         });

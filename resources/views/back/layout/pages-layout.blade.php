@@ -2,43 +2,56 @@
 <html>
 
 <head>
-    <!-- Basic Page Info -->
     <meta charset="utf-8" />
     <title>@yield('pageTitle')</title>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-    <!-- Site favicon -->
+    <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/back/vendors/images/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/back/vendors/images/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/back/vendors/images/favicon-16x16.png" />
 
-    <!-- Mobile Specific Metas -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-
-    <!-- Google Font -->
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
-    <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="/back/vendors/styles/core.css" />
-    <link rel="stylesheet" type="text/css" href="/back/vendors/styles/icon-font.min.css" />
-    <link rel="stylesheet" type="text/css" href="/back/vendors/styles/style.css" />
-    <link rel="stylesheet" type="text/css" href="/extra-assets/ijabo/css/ijabo.min.css" />
 
-    <!-- jQuery (REQUIRED) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- TEMPLATE CSS ONLY -->
+    <link rel="stylesheet" href="/back/vendors/styles/core.css" />
+    <link rel="stylesheet" href="/back/vendors/styles/icon-font.min.css" />
+    <link rel="stylesheet" href="/back/vendors/styles/style.css" />
 
-    <!-- Bootstrap 4 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Extra -->
+    <link rel="stylesheet" href="/extra-assets/ijabo/css/ijabo.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- CUSTOM FIX -->
+    <style>
+        .no-arrow::after {
+            display: none !important;
+        }
+
+        .user-info-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-menu {
+            z-index: 9999 !important;
+        }
+    </style>
 
     @livewireStyles
-    @kropifyStyles 
+    @kropifyStyles
     @stack('stylesheets')
 </head>
 
 <body>
-
 
     <!-- header -->
     <div class="header">
@@ -278,8 +291,10 @@
     <div class="left-side-bar">
         <div class="brand-logo">
             <a href="#">
-                <img src="/images/logos/{{ isset(settings()->site_logo) ? settings()->site_logo : '' }}" alt="" class="dark-logo site-logo"  style="height: 50px" width="250px"/>
-                <img src="/images/logos/{{ isset(settings()->site_logo) ? settings()->site_logo : '' }}" alt="" class="light-logo site-logo" style="height: 50px" width="250px"/>
+                <img src="/images/logos/{{ isset(settings()->site_logo) ? settings()->site_logo : '' }}"
+                    alt="" class="dark-logo site-logo" style="height: 50px" width="250px" />
+                <img src="/images/logos/{{ isset(settings()->site_logo) ? settings()->site_logo : '' }}"
+                    alt="" class="light-logo site-logo" style="height: 50px" width="250px" />
             </a>
             <div class="close-sidebar" data-toggle="left-sidebar-close">
                 <i class="ion-close-round"></i>
@@ -370,16 +385,18 @@
 
     <x-toast />
 
-    <!-- js -->
+    <!-- TEMPLATE JS ONLY (IMPORTANT) -->
     <script src="/back/vendors/scripts/core.js"></script>
     <script src="/back/vendors/scripts/script.min.js"></script>
     <script src="/back/vendors/scripts/process.js"></script>
     <script src="/back/vendors/scripts/layout-settings.js"></script>
 
+    {{-- Toastr js --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     @livewireScripts
     @kropifyScripts
 
-    
     @stack('scripts')
 </body>
 
