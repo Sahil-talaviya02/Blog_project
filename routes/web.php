@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -36,9 +37,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/logout', 'logoutHandler')->name('logout');
             Route::get('/profile', 'profileView')->name('profile');
             Route::post('/update-profile-picture', 'updateProfilePicture')->name('update_profile_picture');
-            Route::get('/settings', 'generalSettings')->name('settings');
-            Route::post('/update-logo', 'updateLogo')->name('update_logo');
-            Route::get('/categories', 'categoriesPage')->name('categories');
+
+
+            Route::middleware(['onlySuperAdmin'])->group(function () {
+                Route::get('/settings', 'generalSettings')->name('settings');
+                Route::post('/update-logo', 'updateLogo')->name('update_logo');
+                Route::get('/categories', 'categoriesPage')->name('categories');
+            });
+        });
+
+
+        Route::controller(PostController::class)->group(function () {
+            Route::get('/post/new', 'addPost')->name('add_post');
+            Route::post('/post/create', 'createPost')->name('create_post');
+            Route::get('/posts', 'allPosts')->name('posts');
         });
     });
 });

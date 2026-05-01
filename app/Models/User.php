@@ -68,4 +68,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserSocialLink::class, 'user_id', 'id');
     }
+
+    public function getTypeAttribute($value)
+    {
+        return $value;
+    }
+
 }

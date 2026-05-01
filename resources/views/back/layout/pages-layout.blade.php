@@ -305,37 +305,47 @@
             <div class="sidebar-menu">
                 <ul id="accordion-menu">
                     <li>
-                        <a href="{{ route('admin.dashboard') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                        <a href="{{ route('admin.dashboard') }}"
+                            class="dropdown-toggle no-arrow {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                             <span class="micon fa fa-home"></span>
                             <span class="mtext">Home</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="{{ route('admin.categories') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('admin.categories') ? 'active' : '' }}">
-                            <span class="micon fa fa-th-list"></span>
-                            <span class="mtext">Categories</span>
-                        </a>
-                    </li>
+
+                    @if (auth()->user()->type == 'superAdmin')
+                        <li>
+                            <a href="{{ route('admin.categories') }}"
+                                class="dropdown-toggle no-arrow {{ request()->routeIs('admin.categories') ? 'active' : '' }}">
+                                <span class="micon fa fa-th-list"></span>
+                                <span class="mtext">Categories</span>
+                            </a>
+                        </li>
+                    @endif
                     <li class="dropdown">
-                        <a href="javascript:;" class="dropdown-toggle">
+                        <a href="javascript:;"
+                            class="dropdown-toggle {{ request()->routeIs('admin.add_post') || request()->routeIs('admin.posts') ? 'active' : '' }}">
                             <span class="micon fa fa-newspaper-o"></span>
                             <span class="mtext"> Posts </span>
                         </a>
                         <ul class="submenu">
-                            <li><a href="">New</a></li>
-                            <li><a href="">Posts</a></li>
+                            <li><a href="{{ route('admin.add_post') }}"
+                                    class="{{ request()->routeIs('admin.add_post') ? 'active' : '' }}">New</a></li>
+                            <li><a href="{{ route('admin.posts') }}"
+                                    class="{{ request()->routeIs('admin.posts') ? 'active' : '' }}">Posts</a></li>
                         </ul>
                     </li>
-                    <li class="dropdown">
-                        <a href="javascript:;" class="dropdown-toggle">
-                            <span class="micon fa fa-shopping-bag">
-                            </span><span class="mtext">Shop</span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="">New Product</a></li>
-                            <li><a href="">All Products</a></li>
-                        </ul>
-                    </li>
+                    @if (auth()->user()->type == 'superAdmin')
+                        <li class="dropdown">
+                            <a href="javascript:;" class="dropdown-toggle">
+                                <span class="micon fa fa-shopping-bag">
+                                </span><span class="mtext">Shop</span>
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="">New Product</a></li>
+                                <li><a href="">All Products</a></li>
+                            </ul>
+                        </li>
+                    @endif
                     <li>
                         <a href="invoice.html" class="dropdown-toggle no-arrow">
                             <span class="micon bi bi-receipt-cutoff">
@@ -349,17 +359,21 @@
                         <div class="sidebar-small-cap">Settings</div>
                     </li>
                     <li>
-                        <a href="{{ route('admin.profile') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('admin.profile') ? 'active' : '' }}">
+                        <a href="{{ route('admin.profile') }}"
+                            class="dropdown-toggle no-arrow {{ request()->routeIs('admin.profile') ? 'active' : '' }}">
                             <span class="micon fa fa-user-circle"></span>
                             <span class="mtext"> Profile </span>
                         </a>
                     </li>
-                    <li>
-                        <a href="{{ route('admin.settings') }}" class="dropdown-toggle no-arrow {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
-                            <span class="micon fa fa-cog"></span>
-                            <span class="mtext"> General Settings </span>
-                        </a>
-                    </li>
+                    @if (auth()->user()->type == 'superAdmin')
+                        <li>
+                            <a href="{{ route('admin.settings') }}"
+                                class="dropdown-toggle no-arrow {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
+                                <span class="micon fa fa-cog"></span>
+                                <span class="mtext"> General Settings </span>
+                            </a>
+                        </li>
+                    @endif
                 </ul>
             </div>
         </div>
