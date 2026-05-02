@@ -23,11 +23,10 @@ class Category extends Model
         return $this->belongsTo(ParentCategory::class, 'parent_id');
     }
 
-    // optional (if posts exist)
-    // public function posts()
-    // {
-    //     return $this->hasMany(Post::class);
-    // }
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'category_id', 'id');
+    }
 
     public function sluggable(): array
     {

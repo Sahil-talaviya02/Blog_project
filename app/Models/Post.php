@@ -11,6 +11,8 @@ class Post extends Model
     //
     use HasFactory, Sluggable;
 
+
+
     protected $fillable = [
         'author_id',
         'category_id',
@@ -31,5 +33,23 @@ class Post extends Model
                 'source' => 'title',
             ]
         ];
+    }
+
+    public function author()
+    {
+        return $this->hasOne(User::class, 'id', 'author_id');
+    }
+
+    public function category()
+    {
+        return $this->hasOne(Category::class, 'id', 'category_id');
+    }
+
+    public function scopeSearch($query, $term)
+    {
+        $term = '%' . $term . '%';
+        $query->where(function($query) use($term) {
+            $query->where('title', 'LIKE', $term);
+        });
     }
 }

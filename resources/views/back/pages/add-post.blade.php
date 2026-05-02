@@ -54,7 +54,6 @@
                                 placeholder="Enter post content here..."></textarea>
                             <span class="text-danger error-text content_error"></span>
                         </div>
-
                     </div>
                 </div>
 
@@ -73,7 +72,6 @@
                         </div>
                     </div>
                 </div>
-
 
             </div>
             <div class="col-md-3">
