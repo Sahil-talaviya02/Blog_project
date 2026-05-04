@@ -9,7 +9,6 @@
 @push('scripts')
     <script>
         // ================= MODALS =================
-
         window.addEventListener('showParentCategoryModalForm', () => {
             $('#pcategory-modal').modal('show');
         });
@@ -25,7 +24,6 @@
         window.addEventListener('hideCategoryModalForm', () => {
             $('#category-modal').modal('hide');
         });
-
 
         // ================= DELETE CONFIRM =================
         document.addEventListener('livewire:init', () => {
@@ -54,6 +52,23 @@
                 Livewire.dispatch('deleteCategory', {
                     id
                 });
+            });
+
+        });
+
+        // ================= TOASTR================
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('showToastr', (data) => {
+                let type = data.type;
+                let message = data.message;
+
+                if (type === 'success') {
+                    toastr.success(message, 'Success');
+                } else if (type === 'error') {
+                    toastr.error(message, 'Error');
+                } else if (type === 'warning') {
+                    toastr.warning(message, 'Warning');
+                }
             });
 
         });

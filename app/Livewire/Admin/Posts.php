@@ -7,6 +7,7 @@ use App\Models\ParentCategory;
 use App\Models\Post;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\File;
 
 class Posts extends Component
 {
@@ -16,7 +17,7 @@ class Posts extends Component
     public $categories_html;
 
     public $search = null;
-    public $author = null;
+    public $author_id = null;
     public $category = null;
     public $visibility = null;
     public $sortBy = 'desc';
@@ -24,7 +25,7 @@ class Posts extends Component
 
     protected $queryString = [
         'search' => ['except' => ''],
-        'author' => ['except' => ''],
+        'author_id' => ['except' => ''],
         'category' => ['except' => ''],
         'visibility' => ['except' => ''],
         'sortBy' => ['except' => '']
@@ -58,6 +59,11 @@ class Posts extends Component
 
     public function mount()
     {
+        if (auth()->user()->type == "superAdmin") {
+            $this->author_id = auth()->user()->id;
+        } else {
+            $this->author_id = null;
+        }
         $this->post_visibility = $this->visibility == 1 ? 0 : 1;
         $categories = ParentCategory::with(['children' => function ($query) {
             $query->whereHas('posts');
@@ -88,8 +94,8 @@ class Posts extends Component
     {
         return view('livewire.admin.posts', ['posts' => auth()->user()->type == "superAdmin" ?
             Post::search(trim($this->search))
-            ->when($this->author, function ($query) {
-                $query->where('author_id', $this->author);
+            ->when($this->author_id, function ($query) {
+                $query->where('author_id', $this->author_id);
             })
             ->when($this->category, function ($query) {
                 $query->where('category_id', $this->category);

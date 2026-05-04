@@ -151,17 +151,27 @@ class Categories extends Component
     public function deleteCategory($id)
     {
         $category = Category::findOrFail($id);
+        $category->loadCount('posts');
 
-        // delete posts if exists
-        if (method_exists($category, 'posts')) {
-            $category->posts()->delete();
+        if ($category->posts->count() > 0) {
+            $count = $category->posts->count();
+            $this->dispatch('showToastr', type: 'error', message: 'Category has ' . $count . ' posts. Delete posts first.');
+        } else {
+            // delete posts if exists
+            if (method_exists($category, 'posts')) {
+                $category->posts()->delete();
+            }
+
+            $delete = $category->delete();
+            if ($delete) {
+                $this->dispatch('showToastr', type: 'success', message: 'Category deleted successfully');
+            } else {
+                $this->dispatch('showToastr', type: 'error', message: 'Failed to delete category');
+            }
         }
-
-        $category->delete();
     }
 
     // ================= RENDER =================
-
     public function render()
     {
         return view('livewire.admin.categories', [

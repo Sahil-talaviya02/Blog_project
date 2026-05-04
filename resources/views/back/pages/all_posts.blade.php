@@ -28,3 +28,57 @@
     </div>
     @livewire('admin.posts')
 @endsection
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+
+            // Setup CSRF for all AJAX requests
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+
+            // Delete button click
+            $(document).on('click', '.deletePostBtn', function(e) {
+                e.preventDefault();
+
+                let button = $(this);
+                let id = button.data('id');
+                let row = button.closest('tr');
+
+                // Confirm before delete
+                if (!confirm("Are you sure you want to delete this post?")) {
+                    return;
+                }
+
+                $.ajax({
+                    url: '/admin/post/delete/' + id,
+                    type: 'DELETE',
+
+                    success: function(res) {
+                        if (res.status === 'success') {
+                            toastr.success(res.message);
+
+                            // Remove row smoothly
+                            row.fadeOut(400, function() {
+                                $(this).remove();
+                            });
+
+                        } else {
+                            toastr.error(res.message || 'Delete failed');
+                        }
+                    },
+
+                    error: function(xhr) {
+                        console.log(xhr.responseText); // debug error
+
+                        toastr.error('Something went wrong!');
+                    }
+                });
+
+            });
+
+        });
+    </script>
+@endpush

@@ -81,7 +81,7 @@
                                     <td>{{ $category->name }}</td>
                                     <td>{{ $category->parentCategory->name ?? 'N/A' }}
                                     </td>
-                                    <td>{{ $category->posts_count ?? '-' }}</td>
+                                    <td>{{ $category->posts->count() }}</td>
                                     <td>
                                         <div class="table-action">
                                             <a href="javascript:;" wire:click="editCategory({{ $category->id }})"

@@ -8,10 +8,7 @@ use Cviebrock\EloquentSluggable\Sluggable;
 
 class Post extends Model
 {
-    //
     use HasFactory, Sluggable;
-
-
 
     protected $fillable = [
         'author_id',

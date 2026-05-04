@@ -10,8 +10,8 @@
 
             @if (auth()->user()->type == 'superAdmin')
                 <div class="col-md-2">
-                    <label for="author"><b class="text-secondary">Author</b></label>
-                    <select wire:model.live="author" name="author" id="author" class="form-control">
+                    <label for="author_id"><b class="text-secondary">Author</b></label>
+                    <select wire:model.live="author_id" name="author_id" id="author_id" class="form-control">
                         <option value="">Select Author</option>
                         @foreach (\App\Models\User::whereHas('posts')->get() as $user)
                             <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -37,8 +37,8 @@
             </div>
 
             <div class="col-md-2">
-                <label for="author"><b class="text-secondary">Sort By</b></label>
-                <select wire:model.live="sortBy" name="author" id="author" class="form-control">
+                <label for="author_id"><b class="text-secondary">Sort By</b></label>
+                <select wire:model.live="sortBy" name="author_id" id="author_id" class="form-control">
                     <option value="">Select Sort Order</option>
                     <option value="asc">Ascending</option>
                     <option value="desc">Descending</option>
@@ -60,7 +60,8 @@
                 <tbody>
                     @forelse ($posts as $post)
                         <tr>
-                            <td scope="row">{{ $loop->iteration }}</td>
+                            <td scope="row">
+                                {{ ($posts->currentPage() - 1) * $posts->perPage() + $loop->iteration }}
                             <td>
                                 <a href=""><img src="{{ asset('images/posts/' . $post->featured_image) }}"
                                         alt="" width="100"></a>
@@ -77,10 +78,12 @@
                             </td>
                             <td>
                                 <div class="table-actions">
-                                    <a href="" data-color="#265ed7" style="color: rgb(38,94,216)"><i
-                                            class="icon-copy dw dw-edit2"></i></a>
-                                    <a href="" data-color="#e95959" style="color: rgb(233,89,89)"><i
-                                            class="icon-copy dw dw-delete-3"></i></a>
+                                    <a href="{{ route('admin.edit_post', [$post->id]) }}" data-color="#265ed7"
+                                        style="color: rgb(38,94,216)"><i class="icon-copy dw dw-edit2"></i></a>
+                                    <a href="javascript:void(0);" class="deletePostBtn" data-id="{{ $post->id }}"
+                                        style="color:red;">
+                                        <i class="icon-copy dw dw-delete-3"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
